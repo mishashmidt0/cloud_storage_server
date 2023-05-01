@@ -6,20 +6,23 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-@Entity('file')
+export enum FileType {
+  PHOTOS = 'photos',
+  TRASH = 'trash',
+}
+@Entity('files')
 export class FileEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  fileName: string;
+  filename: string;
 
   @Column()
   originalName: string;
 
   @Column()
-  size: string;
+  size: number;
 
   @Column()
   mimetype: string;
@@ -28,5 +31,5 @@ export class FileEntity {
   user: UserEntity;
 
   @DeleteDateColumn()
-  deleteAt?: Date;
+  deletedAt?: Date;
 }

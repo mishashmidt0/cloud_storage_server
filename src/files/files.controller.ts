@@ -7,10 +7,14 @@ import {
   MaxFileSizeValidator,
   Get,
   UseGuards,
+  Query,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { UserId } from 'src/auth/decorators/user-id.decorator';
+import { FileType } from 'src/files/entities/file.entity';
 import { fileStorage } from 'src/files/storage,ts';
 import { FilesService } from './files.service';
 
@@ -22,8 +26,8 @@ export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Get()
-  findAll() {
-    return this.filesService.findAll();
+  findAll(@UserId() userId: number, @Query('type') fileType: FileType) {
+    return this.filesService.findAll(userId, fileType);
   }
 
   @Post()
@@ -51,7 +55,14 @@ export class FilesController {
       }),
     )
     file: Express.Multer.File,
+    @UserId() userId: number,
   ) {
-    return file;
+    return this.filesService.create(file, userId);
+  }
+
+  @Delete()
+  remove(@UserId() userId: number, @Query('ids') ids: string) {
+    // files?ids=1,2,7,8
+    return this.filesService.remove(userId, ids);
   }
 }
